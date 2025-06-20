@@ -193,7 +193,7 @@ cython_debug/
 .cursorignore
 output
 input
-models
+/models
 images
 huggingface
 __pycache__
