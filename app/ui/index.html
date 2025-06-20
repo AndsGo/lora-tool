@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoraTool训练数据预处理工具</title>
+    <!-- 图标 -->
+    <link rel="icon" href="./static/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./static/css/styles.css">
+    <!-- 引入 Fabric.js -->
+    <script src="./static/lib/fabricjs.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="status-tag" class="status-tag status-online">运行中</div>
+        <h1>Lora 训练数据预处理工具</h1>
+        <!-- 背景去除部分 -->
+        <!-- 在 container div 内添加选项卡导航 -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-target="bg-removal">背景处理</button>
+            <button class="tab-btn" data-target="image-processing">图片编辑</button>
+            <button class="tab-btn" data-target="tag-processing">标签处理</button>
+        </div>
+        
+        <!-- 修改原有 section 结构 -->
+        <section id="bg-removal" class="tab-content active">
+            <h2>图片背景去除</h2>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="input-folder">原始文件夹:</label>
+                    <input type="text" id="input-folder" placeholder="输入文件夹路径">
+                </div>
+                <div class="control-group">
+
+                    <label for="output-folder">输出文件夹:</label>
+                    <input type="text" id="output-folder" placeholder="输出文件夹路径">
+                </div>
+                <!-- <div class="control-group">
+                    <label>背景替换:</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="bg-type" value="white" checked> 白底</label>
+                        <label><input type="radio" name="bg-type" value="transparent"> 透明</label>
+                    </div>
+                </div> -->
+                <div class="control-group">
+                    <label for="detection-classes">识别部分(Tags):</label>
+                    <div class="tags-input-container">
+                        <div class="tags-display" id="detection-tags-container"></div>
+                        <!-- detection-classes 不显示 -->
+                        <input type="text" id="detection-classes" value="clothing,pants,people,limbs,shoes" class="hidden-input">
+                        <input type="text" id="detection-search" placeholder="搜索并添加标签">
+                        <div class="search-results" id="detection-results"></div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="reserved-classes">截取部分:</label>
+                    <div class="tags-input-container">
+                        <div class="tags-display" id="reserved-tags-container"></div>
+                        <input type="text" id="reserved-classes" value="clothing,pants" class="hidden-input" >
+                        <input type="text" id="reserved-search" placeholder="搜索并添加标签">
+                        <div class="search-results" id="reserved-results"></div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label><input type="checkbox" id="remove-face"> 去除面部</label>
+                </div>
+                <!-- 阈值 -->
+                <div class="control-group">
+                    <label>阈值:</label>
+                    <div class="slider-container">
+                        <input type="range" id="threshold" min="0.1" max="1" value="0.3" step="0.05">
+                        <span id="threshold-value">0.3</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>输出尺寸:</label>
+                    <select id="output-size">
+                        <option value="512">512x512</option>
+                        <option value="768" selected>768x768</option>
+                        <option value="1024">1024x1024</option>
+                        <option value="2048">2048x2048</option>
+                    </select>
+                </div>
+            </div>
+            <div class="next-step">
+                <button id="normalize-btn" class="primary-btn">下一步</button>
+            </div>
+        </section>
+        
+        <!-- 图片处理部分 -->
+        <section id="image-processing" class="tab-content">
+            <h2>图片处理</h2>
+             <!-- 文件夹输入和加载按钮 -->
+            <div class="control-group" style="margin-bottom: 15px;">
+                <label for="processed-folder">处理文件夹:</label>
+                <input type="text" id="processed-folder" placeholder="处理后的图片文件夹路径" 
+                    style="width: 300px;">
+                <button id="load-processed-btn" class="primary-btn" style="margin-left: 10px;width: 200px;">加载已处理图片</button>
+            </div>
+            <div class="image-processing-container">
+                <div class="image-selection">
+                    <h3>图片列表</h3>
+                    <div class="image-grid scrollable" id="processed-images-container">
+                        <!-- 处理后的图片将在这里显示 -->
+                    </div>
+                </div>
+                <div class="image-operations">
+                    <h3>图片编辑</h3>
+                    <div class="canvas-wrapper">
+                        <canvas id="image-editor-canvas"></canvas>
+                    </div>
+                    <div class="canvas-controls">
+                        <button id="rotate-left-btn">左旋转</button>
+                        <button id="rotate-right-btn">右旋转</button>
+                        <button id="zoom-in-btn">放大</button>
+                        <button id="zoom-out-btn">缩小</button>
+                        <button id="crop-btn">裁剪</button>
+                        <button id="erase-btn">橡皮擦</button>
+                        <div class="brush-control">
+                            <input type="range" id="brush-size" min="1" max="50" value="5">
+                            <span id="brush-size-label">15px</span>
+                        </div>
+                        <input type="color" id="brush-color" value="#ffffff" style="width: 40px; height: 30px; padding: 2px;">
+                        <button id="brush-btn">画笔</button>
+                        <button id="reset-btn">取消</button>
+                        <button id="save-btn" class="primary-btn">确认</button>
+                    </div>
+                </div>
+            </div>
+            <div class="next-step">
+                <button id="next-to-tags-btn" class="primary-btn">下一步</button>
+            </div>
+        </section>
+        
+        <!-- 提示词处理部分 -->
+        <section id="tag-processing" class="tab-content">
+            <h2>图片提示词处理</h2>
+             <!-- 文件夹输入和加载按钮 -->
+             <div class="control-group" style="margin-bottom: 15px;">
+                <label for="tags-folder">标签文件夹:</label>
+                <input type="text" id="tags-folder" placeholder="标签处理文件夹路径" 
+                       style="width: 300px;">
+                <button id="load-tags-btn" class="primary-btn" style="margin-left: 10px;">重新读取标签数据</button>
+            </div>
+            <div class="tag-processing-container">
+                <div class="image-selection">
+                    <h3>图片列表 <label><input type="checkbox" id="select-all"> 全选</label></h3>
+                    <div class="tag-image-grid scrollable" id="tag-images-container">
+                        <!-- 用于标签处理的图片将在这里显示 -->
+                    </div>
+                </div>
+                <!-- 在tag-editor div中添加翻译控件 -->
+                <div class="tag-editor">
+                    <h3>Tags 编辑区</h3>
+                    <div id="selected-images-info"></div>
+                    <div class="tag-input-container">
+                        <label for="translate-lang">翻译语言:</label>
+                        <select id="translate-lang">
+                            <option value="zh-CN">中文</option>
+                            <option value="en">英文</option>
+                            <option value="ja">日文</option>
+                            <option value="ko">韩文</option>
+                        </select>
+                        <button id="translate-btn" class="primary-btn">翻译Tags</button>
+                    </div>
+                    <div class="tags-container" id="tags-container">
+                        <!-- 标签将在这里显示 -->
+                    </div>
+                    <div class="tag-input-container">
+                        <label for="summon-words">召唤词:</label>
+                        <input type="text" id="summon-words" placeholder="输入召唤词，用逗号分隔">
+                        <button id="add-summon-btn">添加召唤词</button>
+                    </div>
+                    <div class="tag-input-container">
+                        <label for="filter-words">过滤词:</label>
+                        <input type="text" id="filter-words" placeholder="输入过滤词，用逗号分隔">
+                    </div>
+                    <div class="tag-actions">
+                        <button id="save-tags-btn" class="primary-btn">保存Tags</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="./static/js/script.js"></script>
+</body>
+</html>
