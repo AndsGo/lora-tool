@@ -1,12 +1,3 @@
-$Env:HF_HOME = "huggingface"
-
-if (!(Test-Path -Path "venv")) {
-    Write-Output  "Creating venv for python..."
-    python -m venv venv
-}
-.\venv\Scripts\activate
-
-Write-Output "Installing deps..."
 @REM Installs the project dependencies.
 @REM Install dependencies.
 pip install torch==2.7.0+cu128 torchvision==0.22.0+cu128 --extra-index-url https://download.pytorch.org/whl/cu128
