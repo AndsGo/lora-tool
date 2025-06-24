@@ -9,7 +9,10 @@ lora图片背景/大小/tag处理工具，用于输出适合lora训练的图片
 # 环境
 1. python 3.10+
 2. GPU 6GB+
-# 项目结构
+# Windows 便携版
+[发布页面](https://github.com/AndsGo/lora-tool/releases) 上有一个适用于 Windows 的便携独立版本，可以在 Nvidia GPU 上运行，也可以在您的 CPU 上运行。
+
+[直接下载链接](https://github.com/AndsGo/lora-tool/releases/download/v1.0.0/setup.exe)
 # 安装
 1. 安装依赖
 windows
