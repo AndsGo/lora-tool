@@ -33,8 +33,7 @@ WORKDIR /app
 COPY . /app
 
 # 安装所有依赖
-RUN pip install oss2 runpod \
-    && pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu128 \
+RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu128 \
     && pip install -r requirements.txt \
     && python -m spacy download en_core_web_lg
 

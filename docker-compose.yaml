@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  lora-tool:
+    build: .
+    container_name: lora-tool:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"  # 映射容器8000端口到主机8000端口
+    volumes:
+      - ./config.json:/app/config.json  # 配置文件挂载                 # 文档目录挂载
+    environment:
+      - PYTHONUNBUFFERED=1              # 确保Python输出实时刷新到控制台
+      - LOG_LEVEL=INFO                  # 日志级别配置
+    working_dir: /app
+    command: ./start.sh

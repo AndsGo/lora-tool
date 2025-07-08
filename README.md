@@ -6,6 +6,8 @@ lora图片背景/大小/tag处理工具，用于输出适合lora训练的图片
 3.comfyui
 4.MiaoshouAI
 5.ComfyUI_LayerStyle
+# docker部署
+[docker.md](./doc/docker.md)
 # 环境
 1. python 3.10+
 2. GPU 6GB+
